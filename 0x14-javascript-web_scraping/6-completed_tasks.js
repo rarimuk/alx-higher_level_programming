@@ -1,21 +1,21 @@
 #!/usr/bin/node
-// Shows the number of tasks completed by User
 const request = require('request');
-const url = process.argv[2];
 
-request(url, (err, resp, body) => {
-  if (err) { console.log(err); }
+if (process.argv.length > 2) {
+  request(process.argv[2], (err, res, body) => {
+    const aggregate = {};
 
-  const completed = {};
-  const jsonBody = JSON.parse(body);
-  for (const task of jsonBody) {
-    if (task.completed) {
-      if (completed[task.userId]) {
-        completed[task.userId]++;
-      } else {
-        completed[task.userId] = 1;
-      }
+    if (err) {
+      console.log(err);
     }
-  }
-  console.log(completed);
-});
+    JSON.parse(body).forEach(element => {
+      if (element.completed) {
+        if (!aggregate[element.userId]) {
+          aggregate[element.userId] = 0;
+        }
+        aggregate[element.userId]++;
+      }
+    });
+    console.log(aggregate);
+  });
+}
